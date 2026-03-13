@@ -17,7 +17,7 @@ graph LR
     O -->|signierte Mail| P
     P -->|Port 587 + SASL| R
     P -->|Pipe: dovecot deliver| D[Dovecot]
-    D -->|Maildir| M[("`/var/vmail/<br/>{{DOMAIN}}/user/`")]
+    D -->|Maildir| M["/var/vmail/\{{DOMAIN}}/user/"]
     D -->|Port 993<br/>IMAPS| C
     P -->|SASL-Auth| D
     DB[(MySQL<br/>postfixadmin)] -->|virtual maps| P
