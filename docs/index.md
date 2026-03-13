@@ -1,9 +1,27 @@
 
-# 📨 Self-Hosted Mailserver mit dynamischer IP
+# 📨 Self-Hosted Mailserver - Provider Grade
 
-Diese Dokumentation beschreibt eine selbst betriebene Mailinfrastruktur mit einem **Relay-Server** (`{{RELAY_HOSTNAME}}`, statische IP bei Netcup) und einem **Heimserver** (`{{HOME_HOSTNAME}}`, dynamische IP via deSEC-DynDNS).
+Diese Dokumentation beschreibt die Implementierung einer professionellen Mail-Infrastruktur, die auf maximale Zustellbarkeit und Sicherheit optimiert ist. Ziel ist ein reibungsloser Mail-Austausch, der typische Hürden wie Blacklisting oder mangelnde Domain-Reputation durch ein durchdachtes Architektur-Design umgeht.
 
-Eingehende Mails werden vom Relay empfangen, gefiltert und an den Heimserver weitergeleitet. Ausgehende Mails werden vom Heimserver signiert (OpenDKIM) und über den Relay ins Internet zugestellt.
+**Das Architektur-Konzept** Das Design basiert auf einer funktionalen Trennung:
+
+- **Public Relay (Statische IP):** Ein schlanker Server bei einem Hoster, der als primärer Gateway für ein- und ausgehende E-Mails dient.
+    
+- **Home Server (Dynamische IP):** Der lokale Kern der Infrastruktur, der die tatsächlichen Postfächer verwaltet und die Datenhoheit behält.
+    
+
+**Sicherheits- & Validierungsstandards** Um den „Provider Grade“-Status zu erreichen, deckt diese Anleitung die Konfiguration folgender Standards ab:
+
+- **Authentifizierung:** SPF, DKIM und DMARC gegen Spoofing.
+    
+- **Verschlüsselung & Vertrauen:** DANE und Let's Encrypt Zertifikate.
+    
+- **Resilienz:** Greylisting, Anti-Spam- und Anti-Virus-Integration.
+    
+
+**Genutzte Dienste** Für die Umsetzung werden beispielhaft **Gandi** (Registrar), **deSEC** (DNS mit Fokus auf Sicherheit), **NoIP** (DynDNS) sowie **Let's Encrypt** verwendet.
+
+
 
 ---
 
