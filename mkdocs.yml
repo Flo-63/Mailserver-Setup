@@ -1,0 +1,75 @@
+site_name: Self-Hosted Mailserver mit Relay
+site_description: Anleitung für einen selbst gehosteten Mailserver mit dynamischer IP und externem Relay
+site_author: moesch.ws
+docs_dir: docs
+repo_url: https://github.com/Flo-63/Mailserver-Setup
+repo_name: Flo-63/Mailserver-Setup
+edit_uri: ""
+
+theme:
+  name: material
+  language: de
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Darkmode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Lightmode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: de
+
+nav:
+  - Übersicht: index.md
+  - Einleitung:
+    - Problemstellung: 00_Einleitung/00_problem.md
+    - Wann nicht geeignet: 00_Einleitung/01_wann_nicht_geeignet.md
+    - Umfang: 00_Einleitung/02_scope.md
+    - Glossar: 00_Einleitung/03_glossar.md
+    - Variablen: 00_Einleitung/00_variablen.md
+  - Planung:
+    - Voraussetzungen: 01_Planung/04_voraussetzungen.md
+    - DNS Setup: 01_Planung/05_dns_setup.md
+    - Registrar & DNS-Delegation: 01_Planung/05b_registrar_dns.md
+  - Infrastruktur:
+    - Relay-Server: 02_Infrastruktur/06_relay_server.md
+    - Heimserver: 02_Infrastruktur/07_home_server.md
+  - Konfiguration:
+    - DNS Mail-Records: 03_Konfiguration/08_dns_mail_records.md
+    - PostfixAdmin & MySQL: 03_Konfiguration/08b_postfixadmin_mysql.md
+    - DKIM: 03_Konfiguration/09_dkim.md
+    - DMARC: 03_Konfiguration/10_dmarc.md
+    - TLS für SMTP & IMAP: 03_Konfiguration/11_tls_imap_smtp.md
+    - Spamfilter & Virenschutz: 03_Konfiguration/12_spamfilter.md
+  - Betrieb:
+    - Automatisierung: 04_Betrieb/13_automatisierung.md
+    - Betrieb & Wartung: 04_Betrieb/14_betrieb_und_wartung.md
+    - Troubleshooting: 04_Betrieb/15_troubleshooting.md
+  - Referenz:
+    - Config Library: 05_Referenz/config_library.md
