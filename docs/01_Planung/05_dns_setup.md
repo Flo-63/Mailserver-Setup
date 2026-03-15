@@ -1,104 +1,66 @@
+---
+title: DNS Setup
+tags: [mail, planung, dns, desec, dnssec]
+status: ready
+parent: Planung
+created: 2026-03-12
+updated: 2026-03-12
+---
 
 # DNS Setup
 
-In diesem Kapitel wird deSEC als DNS-Provider eingerichtet und die Domain delegiert. Das ist die Grundlage für alle weiteren DNS-Einträge der Mail-Infrastruktur.
+Dieses Kapitel erklärt warum für dieses Setup ein externer DNS-Provider nötig ist, welche Anforderungen er erfüllen muss und wie die DNS-Architektur aussieht. Die konkrete Einrichtung folgt im nächsten Kapitel.
 
 ---
 
-## Übersicht
+## Warum externer DNS-Provider?
+
+Der Standard-DNS vieler Registrare unterstützt keine dynamischen Updates per API. Für dieses Setup sind aber zwei Dinge zwingend erforderlich:
+
+- **Dynamische A-Records** – die IP des Heimservers ändert sich und muss automatisch per API aktualisiert werden
+- **DNSSEC** – für DANE/TLSA und allgemeine E-Mail-Sicherheit
+
+**deSEC** erfüllt beide Anforderungen: DNSSEC nativ, vollständige REST-API für alle Record-Typen, kostenlos.
+
+> Vor dem Kauf einer Domain prüfen ob der gewählte Registrar Custom Nameserver unterstützt. Die Funktion heisst je nach Anbieter „Custom NS", „Bring your own DNS" oder „externe Nameserver". Bei **Gandi** ist das unter *Domain → Nameserver* möglich.
+
+---
+
+## DNS-Architektur
 
 ```mermaid
 graph LR
     A[Domain-Registrar<br/>z. B. Gandi] -->|NS-Records| B[deSEC.io<br/>authoritativer DNS]
     A -->|DS-Record| C[DNSSEC-Kette]
     B --> C
-    B -->|verwaltet| D[MX, SPF, DKIM<br/>DMARC, A, PTR...]
+    B -->|verwaltet| D[MX, SPF, DKIM<br/>DMARC, A, TLSA...]
 ```
+
+Die Verwaltung aller DNS-Records liegt vollständig bei deSEC. Der Registrar kennt nur noch die Nameserver und den DS-Record für DNSSEC.
 
 ---
 
-## 1. Account bei deSEC anlegen
+## Benötigte Records im Überblick
 
-Unter [desec.io](https://desec.io) einen Account registrieren. deSEC ist ein kostenloser, DNSSEC-fähiger DNS-Provider.
+| Record | Name | Zweck |
+|---|---|---|
+| `A` | `{{DOMAIN}}` | Root-Domain → Relay |
+| `A` | `mail` | Relay-Server |
+| `MX` | `{{DOMAIN}}` | Mailempfang |
+| `A` | `smtp` | Heimserver Submission (dynamisch) |
+| `A` | `imap` | Heimserver IMAP (dynamisch) |
+| `TXT` | `{{DOMAIN}}` | SPF |
+| `TXT` | `default._domainkey` | DKIM |
+| `TXT` | `_dmarc` | DMARC |
+| `TLSA` | `_465._tcp.smtp` | DANE |
 
----
+`smtp` und `imap` sind direkte A-Records – keine CNAMEs – weil sie per deSEC-API automatisch aktualisiert werden.
 
-## 2. Domain in deSEC anlegen
-
-Nach der Registrierung die Domain im deSEC Control Panel hinzufügen:
-
-```
-example.com
-```
-
-deSEC weist der Domain autoritativen Nameserver zu:
-
-```
-ns1.desec.io
-ns2.desec.io
-```
-
----
-
-## 3. Nameserver beim Registrar umstellen
-
-Beim Domain-Registrar (hier: Gandi) die Nameserver auf die deSEC-Nameserver ändern:
-
-```
-ns1.desec.io
-ns2.desec.io
-```
-
-Damit wird die DNS-Verwaltung vollständig an deSEC übergeben. Die Änderung kann einige Stunden dauern, bis sie im Internet propagiert ist.
-
----
-
-## 4. DNSSEC aktivieren
-
-deSEC unterstützt DNSSEC nativ. Nach dem Anlegen der Domain wird automatisch ein **DS Record** generiert.
-
-Dieser DS Record muss beim Registrar hinterlegt werden, um die DNSSEC-Vertrauenskette zu schließen:
-
-1. DS Record in deSEC abrufen (Control Panel → Domain → DNSSEC)
-2. DS Record beim Registrar eintragen (bei Gandi: Domain → DNSSEC)
-
----
-
-## 5. Überprüfung
-
-DNS-Delegation prüfen:
-
-```bash
-dig NS example.com
-# Erwartete Ausgabe: ns1.desec.io, ns2.desec.io
-```
-
-DNSSEC prüfen:
-
-```bash
-dig +dnssec example.com
-# AD-Flag in der Antwort zeigt gültige DNSSEC-Signatur an
-```
-
-Oder über Online-Tools:
-
-- [DNSViz](https://dnsviz.net) – grafische DNSSEC-Analyse
-- [Verisign DNSSEC Analyzer](https://dnssec-analyzer.verisignlabs.com)
-
----
-
-## ✅ Ergebnis
-
-Nach diesem Kapitel:
-
-- Die Domain wird über **deSEC.io** verwaltet
-- **DNSSEC** ist aktiviert und die Vertrauenskette ist geschlossen
-- DNS-Einträge können über das Control Panel oder die deSEC-API verwaltet werden
+Die vollständige Konfiguration aller Records ist in [[03_Konfiguration/08_dns_mail_records|DNS Mail-Records]] beschrieben.
 
 ---
 
 ## 🔁 Navigation
 
-**← Zurück:** [Voraussetzungen](../01_Planung/04_voraussetzungen.md)  
-**→ Weiter:** [Registrar und DNS-Delegation](../01_Planung/05b_registrar_dns.md)
-
+**← Zurück:** [[01_Planung/04_voraussetzungen|Voraussetzungen]]  
+**→ Weiter:** [[01_Planung/05b_registrar_dns|Registrar und DNS-Delegation]]

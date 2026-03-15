@@ -1,42 +1,29 @@
+---
+title: Registrar und DNS-Delegation
+tags: [mail, planung, dns, registrar, gandi, desec, dnssec]
+status: ready
+parent: Planung
+created: 2026-03-13
+updated: 2026-03-13
+---
 
 # Registrar und DNS-Delegation
 
-Für dieses Setup wird die DNS-Verwaltung vom Registrar (Gandi) an einen externen DNS-Provider (deSEC) delegiert. Dieses Kapitel beschreibt warum das nötig ist und wie es eingerichtet wird.
+Dieses Kapitel beschreibt die vollständige Einrichtung: von der Domain-Registrierung bis zum fertigen deSEC-Setup mit API-Token.
 
 ---
 
-## Warum externer DNS-Provider?
-
-Der Standard-DNS vieler Registrare unterstützt keine dynamischen Updates per API. Für dieses Setup sind aber zwei Dinge zwingend erforderlich:
-
-- **Dynamische A-Records** – die IP des Heimservers ändert sich und muss automatisch per API aktualisiert werden
-- **DNSSEC** – für DANE/TLSA und allgemeine E-Mail-Sicherheit
-
-deSEC bietet beides: DNSSEC nativ, eine REST-API für alle Record-Typen und ist kostenlos.
-
----
-
-## Voraussetzung: Custom Nameserver beim Registrar
-
-Nicht alle Registrare erlauben das Setzen eigener Nameserver. Die Funktion heisst je nach Anbieter „Custom NS", „Bring your own DNS" oder „externe Nameserver".
-
-Bei **Gandi** ist das möglich und im Control Panel unter *Domain → Nameserver* erreichbar.
-
-> Vor dem Kauf einer Domain prüfen ob der gewählte Registrar Custom Nameserver unterstützt.
-
----
-
-## Ablauf der DNS-Delegation
+## Ablauf
 
 ```mermaid
 graph TD
-    A[Domain bei Gandi kaufen] --> B[Account bei deSEC anlegen]
+    A[Domain beim Registrar kaufen] --> B[Account bei deSEC anlegen]
     B --> C[Domain in deSEC hinzufügen]
-    C --> D[deSEC-Nameserver notieren]
-    D --> E[Nameserver bei Gandi umstellen]
-    E --> F[DS-Record von deSEC abrufen]
-    F --> G[DS-Record bei Gandi eintragen]
-    G --> H[DNSSEC-Kette geschlossen]
+    C --> D[Nameserver beim Registrar umstellen]
+    D --> E[DS-Record bei Registrar eintragen]
+    E --> F[DNSSEC-Kette geschlossen]
+    F --> G[API-Token anlegen]
+    G --> H[Erste Records eintragen]
 ```
 
 ---
@@ -60,9 +47,9 @@ ns2.desec.io
 
 ---
 
-## 3. Nameserver bei Gandi umstellen
+## 3. Nameserver beim Registrar umstellen
 
-Im Gandi Control Panel: *Domain → Nameserver → Extern* – die deSEC-Nameserver eintragen:
+Beim Registrar (hier: Gandi) unter *Domain → Nameserver → Extern* die deSEC-Nameserver eintragen:
 
 ```
 ns1.desec.io
@@ -80,26 +67,26 @@ dig NS {{DOMAIN}}
 
 ## 4. DNSSEC aktivieren
 
-deSEC aktiviert DNSSEC automatisch. Den DS-Record abrufen:
+deSEC aktiviert DNSSEC automatisch beim Anlegen der Domain. Den DS-Record abrufen:
 
 Im deSEC Control Panel: *Domain → DNSSEC* → DS-Record kopieren.
 
-Diesen DS-Record bei Gandi eintragen: *Domain → DNSSEC → DS-Record hinzufügen*.
+Beim Registrar eintragen: bei Gandi unter *Domain → DNSSEC → DS-Record hinzufügen*.
 
-Damit ist die DNSSEC-Vertrauenskette geschlossen – von der Root-Zone über Gandi bis zu deSEC.
+Damit ist die DNSSEC-Vertrauenskette geschlossen – von der Root-Zone über den Registrar bis zu deSEC.
 
-DNSSEC prüfen:
+Prüfen:
 
 ```bash
 dig +dnssec {{DOMAIN}}
 # AD-Flag in der Antwort zeigt gültige DNSSEC-Signatur
 ```
 
-Oder grafisch: [DNSViz](https://dnsviz.net)
+Oder grafisch: [DNSViz](https://dnsviz.net) · [Verisign DNSSEC Analyzer](https://dnssec-analyzer.verisignlabs.com)
 
 ---
 
-## 5. API-Token für deSEC anlegen
+## 5. API-Token anlegen
 
 Für automatische DNS-Updates (DynDNS-Skript, TLSA-Hook) wird ein API-Token benötigt.
 
@@ -119,21 +106,21 @@ curl -s https://desec.io/api/v1/domains/ \
 
 ---
 
-## 6. Erste DNS-Records anlegen
+## 6. Erste Records anlegen
 
-Nach der Delegation können alle Mail-relevanten Records in deSEC eingetragen werden. Die Records werden in [DNS Mail-Records](../03_Konfiguration/08_dns_mail_records.md) beschrieben.
+Direkt nach der Delegation die Basis-Records in deSEC eintragen:
 
-Für den Start werden mindestens benötigt:
+| Record | Name | Wert | Zweck |
+|---|---|---|---|
+| `A` | `{{DOMAIN}}` | `{{RELAY_IP}}` | Root-Domain → Relay |
+| `A` | `mail` | `{{RELAY_IP}}` | Relay-Server |
+| `MX` | `{{DOMAIN}}` | `{{RELAY_HOSTNAME}}` | Mailempfang |
+| `A` | `smtp` | `{{HOME_IP}}` | Heimserver Submission |
+| `A` | `imap` | `{{HOME_IP}}` | Heimserver IMAP |
 
-| Record | Wert | Zweck |
-|---|---|---|
-| `A` @ | `{{RELAY_IP}}` | Root-Domain → Relay |
-| `MX` @ | `{{RELAY_HOSTNAME}}` | Mailempfang |
-| `A` mail | `{{RELAY_IP}}` | Relay-Server |
-| `A` smtp | `{{HOME_IP}}` | Heimserver Submission |
-| `A` imap | `{{HOME_IP}}` | Heimserver IMAP |
+> `smtp` und `imap` werden später vom DynDNS-Skript automatisch aktualisiert. Für den Start reicht der manuelle Eintrag.
 
-> `smtp` und `imap` sind direkte A-Records – keine CNAMEs – weil sie per deSEC-API automatisch aktualisiert werden.
+Alle weiteren Mail-Records (SPF, DKIM, DMARC, TLSA) werden in [[03_Konfiguration/08_dns_mail_records|DNS Mail-Records]] eingerichtet.
 
 ---
 
@@ -143,13 +130,12 @@ Nach diesem Kapitel:
 
 - Die Domain wird vollständig über deSEC verwaltet
 - DNSSEC ist aktiv, die Vertrauenskette ist geschlossen
-- Ein API-Token für automatische Updates liegt bereit
-- DNS-Records können per API oder Control Panel verwaltet werden
+- Ein API-Token für automatische Updates liegt unter `/root/.dedyn-token` bereit
+- Die Basis-Records sind eingetragen
 
 ---
 
 ## 🔁 Navigation
 
-**← Zurück:** [DNS Setup](../01_Planung/05_dns_setup.md)  
-**→ Weiter:** [Relay-Server einrichten](../02_Infrastruktur/06_relay_server.md)
-
+**← Zurück:** [[01_Planung/05_dns_setup|DNS Setup]]  
+**→ Weiter:** [[02_Infrastruktur/06_relay_server|Relay-Server einrichten]]

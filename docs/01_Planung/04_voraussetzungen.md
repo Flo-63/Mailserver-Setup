@@ -57,7 +57,7 @@ Der Relay-Server übernimmt:
 - Spamfilterung (Rspamd, Postgrey)
 - Weiterleitung zum Heimserver
 
-> **Wichtig:** Der Hoster muss Port 25 für ausgehende Verbindungen freigeben. Bei einigen Providern ist das standardmäßig gesperrt und muss explizit beantragt werden.
+> **Wichtig:** Der Hoster muss Port 25 für ausgehende Verbindungen freigeben. Bei einigen Providern ist das standardmäßig gesperrt und muss explizit beantragt werden, was allerdings einige Provider (z.B. Hetzner) ablehnen. Bei NetCup ist Port 25 frei nutzbar.
 
 ---
 

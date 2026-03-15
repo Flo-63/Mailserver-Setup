@@ -1,7 +1,7 @@
 
 # Relay-Server einrichten
 
-Der Relay-Server (`{{RELAY_HOSTNAME}}`) ist die einzige Komponente dieser Architektur mit einer statischen öffentlichen IP-Adresse (`{{RELAY_IP}}`). Er übernimmt die gesamte SMTP-Kommunikation mit dem Internet – der Heimserver bleibt nach außen unsichtbar.
+Der Relay-Server ist die einzige Komponente dieser Architektur mit einer statischen öffentlichen IP-Adresse. Er übernimmt die gesamte SMTP-Kommunikation mit dem Internet – der Heimserver bleibt nach außen unsichtbar.
 
 ---
 
@@ -24,9 +24,10 @@ graph LR
 - Empfang eingehender E-Mails aus dem Internet (Port 25)
 - Spamfilterung und Virenscan via Rspamd + ClamAV
 - Weiterleitung an den Heimserver (Port 2525, IP-basiert via `mynetworks`)
-- Entgegennahme ausgehender Mails vom Heimserver (Port 587, SASL: `{{RELAY_SASL_USER}}`)
+- Entgegennahme ausgehender Mails vom Heimserver (Port 587, 
+  SASL: `{{RELAY_SASL_USER}}`)
 - Versand ausgehender Mails direkt ins Internet
-- Systemmails (Bounces) an `{{DOMAIN}}`-Adressen über `transport_maps` an den Heimserver
+- Systemmails (Bounces) an die Domain-Adressen über `transport_maps` an den Heimserver
 
 ---
 
