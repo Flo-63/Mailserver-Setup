@@ -1,0 +1,2268 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Anleitung für einen selbst gehosteten Mailserver mit dynamischer IP und externem Relay">
+      
+      
+        <meta name="author" content="moesch.ws">
+      
+      
+      
+        <link rel="prev" href="../14_betrieb_und_wartung/">
+      
+      
+        <link rel="next" href="../../05_Referenz/config_library/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>Troubleshooting - Self-Hosted Mailserver mit Relay</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#troubleshooting" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../.." title="Self-Hosted Mailserver mit Relay" class="md-header__button md-logo" aria-label="Self-Hosted Mailserver mit Relay" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Self-Hosted Mailserver mit Relay
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Troubleshooting
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Darkmode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Darkmode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Lightmode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Lightmode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Flo-63/Mailserver-Setup" title="Zum Repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flo-63/Mailserver-Setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Übersicht
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00_Einleitung/00_problem/" class="md-tabs__link">
+          
+  
+  
+  Einleitung
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_Planung/04_voraussetzungen/" class="md-tabs__link">
+          
+  
+  
+  Planung
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../02_Infrastruktur/06_relay_server/" class="md-tabs__link">
+          
+  
+  
+  Infrastruktur
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../03_Konfiguration/08_dns_mail_records/" class="md-tabs__link">
+          
+  
+  
+  Konfiguration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../13_automatisierung/" class="md-tabs__link">
+          
+  
+  
+  Betrieb
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../05_Referenz/config_library/" class="md-tabs__link">
+          
+  
+  
+  Referenz
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Self-Hosted Mailserver mit Relay" class="md-nav__button md-logo" aria-label="Self-Hosted Mailserver mit Relay" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Self-Hosted Mailserver mit Relay
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Flo-63/Mailserver-Setup" title="Zum Repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flo-63/Mailserver-Setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Übersicht
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Einleitung
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Einleitung
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/00_problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problemstellung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/01_wann_nicht_geeignet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wann nicht geeignet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/02_scope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Umfang
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/03_glossar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/00_variablen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variablen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planung
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planung
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_Planung/04_voraussetzungen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Voraussetzungen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_Planung/05_dns_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--ready"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_Planung/05b_registrar_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registrar & DNS-Delegation
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--ready"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastruktur
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Infrastruktur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02_Infrastruktur/06_relay_server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relay-Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02_Infrastruktur/07_home_server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heimserver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfiguration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfiguration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/08_dns_mail_records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Mail-Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/08b_postfixadmin_mysql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostfixAdmin & MySQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/09_dkim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DKIM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/10_dmarc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMARC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/11_tls_imap_smtp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLS für SMTP & IMAP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/12_spamfilter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spamfilter & Virenschutz
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Betrieb
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Betrieb
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_automatisierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatisierung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14_betrieb_und_wartung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Betrieb & Wartung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schnellcheck-systemstatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schnellcheck: Systemstatus
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reverse-dns-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reverse DNS prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smtp-verbindung-testen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMTP-Verbindung testen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#imap-verbindung-testen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IMAP-Verbindung testen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logs-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logs prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rspamd-startet-nicht" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rspamd startet nicht
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dkim-probleme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DKIM-Probleme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spf-probleme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPF-Probleme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dmarc-probleme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMARC-Probleme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mails-landen-im-spam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mails landen im Spam
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-auf-blacklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP auf Blacklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#weiterleitung-vom-relay-zum-heimserver-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weiterleitung vom Relay zum Heimserver prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#end-to-end-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        End-to-End-Test
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="End-to-End-Test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-testmail-senden-und-header-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Testmail senden und Header prüfen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-mailweg-im-log-verfolgen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Mailweg im Log verfolgen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-checkliste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Checkliste
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ergebnis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Ergebnis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referenz
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_Referenz/config_library/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config Library
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#schnellcheck-systemstatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schnellcheck: Systemstatus
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reverse-dns-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reverse DNS prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#smtp-verbindung-testen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMTP-Verbindung testen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#imap-verbindung-testen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IMAP-Verbindung testen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logs-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logs prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rspamd-startet-nicht" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rspamd startet nicht
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dkim-probleme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DKIM-Probleme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spf-probleme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPF-Probleme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dmarc-probleme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMARC-Probleme
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mails-landen-im-spam" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mails landen im Spam
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ip-auf-blacklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IP auf Blacklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#weiterleitung-vom-relay-zum-heimserver-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weiterleitung vom Relay zum Heimserver prüfen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#end-to-end-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        End-to-End-Test
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="End-to-End-Test">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-testmail-senden-und-header-prufen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Testmail senden und Header prüfen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-mailweg-im-log-verfolgen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Mailweg im Log verfolgen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-checkliste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Checkliste
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ergebnis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Ergebnis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h1>
+<p>Viele Probleme beim Mailbetrieb lassen sich durch systematische Prüfung von DNS, Logs und Verbindungen schnell eingrenzen. Dieses Kapitel beschreibt die wichtigsten Diagnoseschritte.</p>
+<hr />
+<h2 id="schnellcheck-systemstatus">Schnellcheck: Systemstatus<a class="headerlink" href="#schnellcheck-systemstatus" title="Permanent link">&para;</a></h2>
+<p>Zuerst prüfen ob alle Dienste laufen:</p>
+<p><strong>Relay-Server:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>systemctl<span class="w"> </span>status<span class="w"> </span>postfix<span class="w"> </span>rspamd<span class="w"> </span>clamav-daemon
+</code></pre></div>
+<p><strong>Heimserver:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>systemctl<span class="w"> </span>status<span class="w"> </span>postfix<span class="w"> </span>dovecot<span class="w"> </span>opendkim
+</code></pre></div>
+<hr />
+<h2 id="dns-prufen">DNS prüfen<a class="headerlink" href="#dns-prufen" title="Permanent link">&para;</a></h2>
+<p>Die häufigste Fehlerquelle. Schnellcheck mit dem Diagnoseskript:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>/usr/local/bin/mailcheck.sh
+</code></pre></div>
+<p>Das Skript prüft SPF, DKIM, DMARC, PTR, MTA-STS und Spamhaus-Listing in einem Durchgang. Die vollständige Version ist in der <a href="../../05_Referenz/config_library/">Config Library</a> dokumentiert.</p>
+<p>Einzelne Records manuell prüfen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># MX</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>dig<span class="w"> </span>MX<span class="w"> </span><span class="o">{{</span>DOMAIN<span class="o">}}</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># SPF</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>dig<span class="w"> </span>TXT<span class="w"> </span><span class="o">{{</span>DOMAIN<span class="o">}}</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># DKIM</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>dig<span class="w"> </span>TXT<span class="w"> </span>default._domainkey.<span class="o">{{</span>DOMAIN<span class="o">}}</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># DMARC</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>dig<span class="w"> </span>TXT<span class="w"> </span>_dmarc.<span class="o">{{</span>DOMAIN<span class="o">}}</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1"># A-Record Relay</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>dig<span class="w"> </span>A<span class="w"> </span><span class="o">{{</span>RELAY_HOSTNAME<span class="o">}}</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="c1"># Heimserver (DynDNS)</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>dig<span class="w"> </span>A<span class="w"> </span><span class="o">{{</span>HOME_SMTP<span class="o">}}</span>
+</code></pre></div>
+<p>Online-Tools für eine vollständige Analyse:</p>
+<ul>
+<li><a href="https://mxtoolbox.com">MXToolbox</a> – MX, SPF, DMARC, Blacklists</li>
+<li><a href="https://www.mail-tester.com">mail-tester.com</a> – Gesamtbewertung einer Testmail</li>
+<li><a href="https://dnsviz.net">DNSViz</a> – DNSSEC-Analyse</li>
+</ul>
+<hr />
+<h2 id="reverse-dns-prufen">Reverse DNS prüfen<a class="headerlink" href="#reverse-dns-prufen" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>dig<span class="w"> </span>-x<span class="w"> </span><span class="o">{{</span>RELAY_IP<span class="o">}}</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># Erwartete Ausgabe: {{RELAY_HOSTNAME}}</span>
+</code></pre></div>
+<p>Forward und Reverse müssen übereinstimmen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>{{RELAY_HOSTNAME}}  →  {{RELAY_IP}}   (A-Record)
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>{{RELAY_IP}}   →  {{RELAY_HOSTNAME}}  (PTR-Record)
+</code></pre></div>
+<p>Der PTR-Record wird beim Hoster (Netcup) konfiguriert, nicht bei deSEC.</p>
+<hr />
+<h2 id="smtp-verbindung-testen">SMTP-Verbindung testen<a class="headerlink" href="#smtp-verbindung-testen" title="Permanent link">&para;</a></h2>
+<p><strong>Relay – Port 25:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>telnet<span class="w"> </span><span class="o">{{</span>RELAY_HOSTNAME<span class="o">}}</span><span class="w"> </span><span class="m">25</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># Erwartete Ausgabe: 220 {{RELAY_HOSTNAME}} ESMTP Postfix</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>openssl<span class="w"> </span>s_client<span class="w"> </span>-connect<span class="w"> </span><span class="o">{{</span>RELAY_HOSTNAME<span class="o">}}</span>:25<span class="w"> </span>-starttls<span class="w"> </span>smtp
+</code></pre></div>
+<p><strong>Relay – Submission Port 587:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>openssl<span class="w"> </span>s_client<span class="w"> </span>-connect<span class="w"> </span><span class="o">{{</span>RELAY_HOSTNAME<span class="o">}}</span>:587<span class="w"> </span>-starttls<span class="w"> </span>smtp
+</code></pre></div>
+<p><strong>Heimserver – Submission Port 587:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>openssl<span class="w"> </span>s_client<span class="w"> </span>-connect<span class="w"> </span><span class="o">{{</span>HOME_SMTP<span class="o">}}</span>:587<span class="w"> </span>-starttls<span class="w"> </span>smtp
+</code></pre></div>
+<hr />
+<h2 id="imap-verbindung-testen">IMAP-Verbindung testen<a class="headerlink" href="#imap-verbindung-testen" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>openssl<span class="w"> </span>s_client<span class="w"> </span>-connect<span class="w"> </span><span class="o">{{</span>HOME_IMAP<span class="o">}}</span>:993
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1"># Erwartete Ausgabe: * OK Dovecot ready.</span>
+</code></pre></div>
+<hr />
+<h2 id="logs-prufen">Logs prüfen<a class="headerlink" href="#logs-prufen" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Wichtig:</strong> Postfix auf dem <strong>Heimserver</strong> loggt via journald – nicht nach <code>/var/log/mail.log</code>. Auf dem <strong>Relay</strong> loggt Postfix nach <code>/var/log/mail.log</code>.</p>
+</blockquote>
+<p><strong>Relay – Postfix live:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mail.log
+</code></pre></div>
+<p><strong>Heimserver – Postfix live:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>postfix<span class="w"> </span>-f
+</code></pre></div>
+<p><strong>Heimserver – Postfix letzte Stunde:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>postfix<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;1 hour ago&quot;</span>
+</code></pre></div>
+<p><strong>Nach einer bestimmten Mail suchen</strong> (Queue-ID aus dem Log):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Relay:</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>grep<span class="w"> </span><span class="s2">&quot;QUEUE-ID&quot;</span><span class="w"> </span>/var/log/mail.log
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Heimserver:</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>postfix<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;QUEUE-ID&quot;</span>
+</code></pre></div>
+<p><strong>Rspamd-Log auf dem Relay:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/rspamd/rspamd.log
+</code></pre></div>
+<p><strong>DynDNS-Log auf dem Heimserver:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/dedyn-update.log
+</code></pre></div>
+<hr />
+<h2 id="rspamd-startet-nicht">Rspamd startet nicht<a class="headerlink" href="#rspamd-startet-nicht" title="Permanent link">&para;</a></h2>
+<p>Rspamd auf dem Relay hat mehrere bekannte Fallstricke:</p>
+<p><strong>1. Kein Newline am Ende von override.conf:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>cat<span class="w"> </span>-A<span class="w"> </span>/etc/systemd/system/rspamd.service.d/override.conf
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1"># Letzte Zeile muss mit $ enden (= Newline vorhanden)</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="c1"># Falls nicht:</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/etc/systemd/system/rspamd.service.d/override.conf
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>systemctl<span class="w"> </span>daemon-reload
+</code></pre></div>
+<p><strong>2. <code>/run/rspamd/</code> fehlt:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>ls<span class="w"> </span>/run/rspamd/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;fehlt&quot;</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/run/rspamd
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>chown<span class="w"> </span>_rspamd:_rspamd<span class="w"> </span>/run/rspamd
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Dauerhaft via tmpfiles.d:</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;d /run/rspamd 0755 _rspamd _rspamd -&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/tmpfiles.d/rspamd.conf
+</code></pre></div>
+<p><strong>3. Port-Konflikt:</strong></p>
+<p>Port 12301 ist auf dem Relay von OpenDKIM belegt. Rspamd muss Port 11332 verwenden:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>grep<span class="w"> </span><span class="s2">&quot;bind_socket&quot;</span><span class="w"> </span>/etc/rspamd/local.d/worker-proxy.inc
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="c1"># Muss sein: bind_socket = &quot;127.0.0.1:11332&quot;;</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="c1"># Falls 12301: sed -i &#39;s/12301/11332/&#39; /etc/rspamd/local.d/worker-proxy.inc</span>
+</code></pre></div>
+<p>Postfix muss denselben Port verwenden:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>postconf<span class="w"> </span>smtpd_milters
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="c1"># Muss sein: inet:localhost:11332</span>
+</code></pre></div>
+<p><strong>Diagnose direkt als _rspamd:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>sudo<span class="w"> </span>-u<span class="w"> </span>_rspamd<span class="w"> </span>rspamd<span class="w"> </span>-c<span class="w"> </span>/etc/rspamd/rspamd.conf<span class="w"> </span>-f<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>tail<span class="w"> </span>-20<span class="w"> </span>/var/log/rspamd/rspamd.log
+</code></pre></div>
+<p><strong>Status prüfen:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>systemctl<span class="w"> </span>status<span class="w"> </span>rspamd
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>rspamc<span class="w"> </span>-h<span class="w"> </span><span class="m">127</span>.0.0.1:11334<span class="w"> </span>stat
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;11332|11334&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="dkim-probleme">DKIM-Probleme<a class="headerlink" href="#dkim-probleme" title="Permanent link">&para;</a></h2>
+<p>Checkliste bei fehlendem oder ungültigem DKIM:</p>
+<ol>
+<li>DNS-Record vorhanden?</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>dig<span class="w"> </span>TXT<span class="w"> </span>default._domainkey.<span class="o">{{</span>DOMAIN<span class="o">}}</span>
+</code></pre></div>
+<ol>
+<li>OpenDKIM läuft und Port ist offen?</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>systemctl<span class="w"> </span>status<span class="w"> </span>opendkim
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">12301</span>
+</code></pre></div>
+<ol>
+<li>Schlüssel gültig?</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>opendkim-testkey<span class="w"> </span>-d<span class="w"> </span><span class="o">{{</span>DOMAIN<span class="o">}}</span><span class="w"> </span>-s<span class="w"> </span>default<span class="w"> </span>-vvv
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="c1"># Erwartete Ausgabe: key OK</span>
+</code></pre></div>
+<ol>
+<li>Milter in Postfix eingebunden?</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>postconf<span class="w"> </span>smtpd_milters
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>postconf<span class="w"> </span>non_smtpd_milters
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="c1"># Erwartete Ausgabe: inet:localhost:12301</span>
+</code></pre></div>
+<p>Wenn die Milter-Einträge leer sind, signiert OpenDKIM nicht – das ist die häufigste Fehlerursache. Korrektur in <a href="../../03_Konfiguration/09_dkim/">DKIM einrichten</a>.</p>
+<hr />
+<h2 id="spf-probleme">SPF-Probleme<a class="headerlink" href="#spf-probleme" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>dig<span class="w"> </span>TXT<span class="w"> </span><span class="o">{{</span>DOMAIN<span class="o">}}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>spf
+</code></pre></div>
+<p>Häufige Fehler:</p>
+<ul>
+<li>Relay-IP nicht im SPF-Record enthalten</li>
+<li>Mehrere TXT-Records mit <code>v=spf1</code> (nur einer erlaubt)</li>
+<li><code>-all</code> vs <code>~all</code> – Hardfail vs Softfail</li>
+</ul>
+<hr />
+<h2 id="dmarc-probleme">DMARC-Probleme<a class="headerlink" href="#dmarc-probleme" title="Permanent link">&para;</a></h2>
+<p>DMARC schlägt fehl wenn SPF <strong>und</strong> DKIM beide nicht passen. Einzeln prüfen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>dig<span class="w"> </span>TXT<span class="w"> </span>_dmarc.<span class="o">{{</span>DOMAIN<span class="o">}}</span>
+</code></pre></div>
+<p>Häufige Fehler:</p>
+<ul>
+<li>Alignment: Die Domain in <code>From:</code> muss mit der SPF/DKIM-Domain übereinstimmen</li>
+<li><code>adkim=s</code> oder <code>aspf=s</code> (strict) schlägt fehl wenn Subdomains verwendet werden</li>
+</ul>
+<hr />
+<h2 id="mails-landen-im-spam">Mails landen im Spam<a class="headerlink" href="#mails-landen-im-spam" title="Permanent link">&para;</a></h2>
+<p>Wenn Mails zugestellt werden aber im Spam landen:</p>
+<ol>
+<li><a href="https://www.mail-tester.com">mail-tester.com</a> – Testmail senden, Score und Diagnose lesen</li>
+<li>DKIM im Header prüfen – <code>DKIM-Signature</code> muss vorhanden sein</li>
+<li>IP-Reputation prüfen: <a href="https://mxtoolbox.com/blacklists.aspx">MXToolbox Blacklist Check</a></li>
+<li>DMARC-Reports auswerten (siehe <a href="../../03_Konfiguration/10_dmarc/">DMARC konfigurieren</a>)</li>
+</ol>
+<hr />
+<h2 id="ip-auf-blacklist">IP auf Blacklist<a class="headerlink" href="#ip-auf-blacklist" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># Schnellcheck über MXToolbox (manuell im Browser)</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="c1"># Oder per dig gegen bekannte Blacklists:</span>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>dig<span class="w"> </span><span class="m">169</span>.21.53.152.zen.spamhaus.org
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="c1"># Keine Antwort = nicht gelistet</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="c1"># Antwort 127.0.0.x = gelistet</span>
+</code></pre></div>
+<blockquote>
+<p>Die IP-Bytes werden für die Abfrage umgekehrt: <code>{{RELAY_IP}}</code> → <code>169.21.53.152</code></p>
+</blockquote>
+<hr />
+<h2 id="weiterleitung-vom-relay-zum-heimserver-prufen">Weiterleitung vom Relay zum Heimserver prüfen<a class="headerlink" href="#weiterleitung-vom-relay-zum-heimserver-prufen" title="Permanent link">&para;</a></h2>
+<p>Wenn Mails den Relay erreichen aber nicht beim Heimserver ankommen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Auf dem Relay:</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mail.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="o">{{</span>HOME_SMTP<span class="o">}}</span>
+</code></pre></div>
+<p>Typische Fehler:</p>
+<ul>
+<li>Heimserver-IP hat sich geändert, DNS noch nicht aktualisiert → DynDNS-Log prüfen</li>
+<li>Port 2525 auf dem Heimserver nicht erreichbar → Portweiterleitung im Router prüfen</li>
+<li><code>transport_maps</code> falsch konfiguriert → <code>postconf transport_maps</code> prüfen</li>
+</ul>
+<hr />
+<h2 id="end-to-end-test">End-to-End-Test<a class="headerlink" href="#end-to-end-test" title="Permanent link">&para;</a></h2>
+<p>Vollständiger Test des Mailwegs nach Einrichtung oder nach Änderungen.</p>
+<h3 id="1-testmail-senden-und-header-prufen">1. Testmail senden und Header prüfen<a class="headerlink" href="#1-testmail-senden-und-header-prufen" title="Permanent link">&para;</a></h3>
+<p>Testmail an <a href="https://www.mail-tester.com">mail-tester.com</a> senden – die Seite zeigt eine temporäre Adresse, an die die Testmail geschickt wird. Ergebnis zeigt Score und Diagnose für SPF, DKIM, DMARC, Blacklists.</p>
+<p>Alternativ: Testmail an eine externe Adresse (z. B. Gmail) senden und den Header prüfen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a># Im Mailclient: &quot;Original anzeigen&quot; / &quot;Show original&quot;
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a># Folgende Felder müssen vorhanden und korrekt sein:
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>Received-SPF: pass
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>DKIM-Signature: v=1; a=rsa-sha256; d={{DOMAIN}}; s={{DKIM_SELECTOR}}; ...
+<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>Authentication-Results: ... dkim=pass; spf=pass; dmarc=pass
+</code></pre></div>
+<h3 id="2-mailweg-im-log-verfolgen">2. Mailweg im Log verfolgen<a class="headerlink" href="#2-mailweg-im-log-verfolgen" title="Permanent link">&para;</a></h3>
+<p><strong>Ausgehende Mail (Heimserver → Relay → Internet):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="c1"># Auf dem Heimserver – Mail in die Queue eingeliefert:</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>postfix<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;to=&lt;testempfaenger&quot;</span>
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="c1"># Auf dem Relay – Mail weitergeleitet:</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>grep<span class="w"> </span><span class="s2">&quot;testempfaenger&quot;</span><span class="w"> </span>/var/log/mail.log
+</code></pre></div>
+<p><strong>Eingehende Mail (Internet → Relay → Heimserver):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1"># Auf dem Relay – Mail empfangen und weitergeleitet:</span>
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>grep<span class="w"> </span><span class="s2">&quot;to=&lt;{{ADMIN_MAIL}}&quot;</span><span class="w"> </span>/var/log/mail.log
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>
+<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="c1"># Auf dem Heimserver – Mail zugestellt:</span>
+<a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>postfix<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;to=&lt;{{ADMIN_MAIL}}&quot;</span>
+</code></pre></div>
+<h3 id="3-checkliste">3. Checkliste<a class="headerlink" href="#3-checkliste" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Prüfpunkt</th>
+<th>Befehl / Tool</th>
+<th>Erwartetes Ergebnis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPF-Record</td>
+<td><code>dig TXT {{DOMAIN}}</code></td>
+<td><code>v=spf1 mx -all</code></td>
+</tr>
+<tr>
+<td>DKIM-Record</td>
+<td><code>dig TXT {{DKIM_SELECTOR}}._domainkey.{{DOMAIN}}</code></td>
+<td>Langer <code>p=</code>-Wert</td>
+</tr>
+<tr>
+<td>DMARC-Record</td>
+<td><code>dig TXT _dmarc.{{DOMAIN}}</code></td>
+<td><code>v=DMARC1; p=...</code></td>
+</tr>
+<tr>
+<td>MX-Record</td>
+<td><code>dig MX {{DOMAIN}}</code></td>
+<td><code>{{RELAY_HOSTNAME}}</code></td>
+</tr>
+<tr>
+<td>SMTP Relay erreichbar</td>
+<td><code>telnet {{RELAY_HOSTNAME}} 25</code></td>
+<td><code>220 ... ESMTP</code></td>
+</tr>
+<tr>
+<td>Submission erreichbar</td>
+<td><code>openssl s_client -connect {{HOME_SMTP}}:587 -starttls smtp</code></td>
+<td>Zertifikat + <code>220</code></td>
+</tr>
+<tr>
+<td>IMAP erreichbar</td>
+<td><code>openssl s_client -connect {{HOME_IMAP}}:993</code></td>
+<td><code>* OK Dovecot ready</code></td>
+</tr>
+<tr>
+<td>DKIM in Header</td>
+<td>Mailheader prüfen</td>
+<td><code>DKIM-Signature</code> vorhanden</td>
+</tr>
+<tr>
+<td>SPF-Ergebnis</td>
+<td>Mailheader prüfen</td>
+<td><code>Received-SPF: pass</code></td>
+</tr>
+<tr>
+<td>DMARC-Ergebnis</td>
+<td>Mailheader prüfen</td>
+<td><code>dmarc=pass</code></td>
+</tr>
+<tr>
+<td>Relay-IP nicht gelistet</td>
+<td><a href="https://mxtoolbox.com/blacklists.aspx">MXToolbox Blacklist</a></td>
+<td>Keine Treffer</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ergebnis">✅ Ergebnis<a class="headerlink" href="#ergebnis" title="Permanent link">&para;</a></h2>
+<p>Mit den in diesem Kapitel beschriebenen Prüfungen lassen sich die meisten Probleme diagnostizieren. Typische Ursachen sind fehlerhafte DNS-Konfiguration, fehlende oder nicht eingebundene DKIM-Signierung und Verbindungsprobleme zwischen Relay und Heimserver.</p>
+<hr />
+<h2 id="navigation">🔁 Navigation<a class="headerlink" href="#navigation" title="Permanent link">&para;</a></h2>
+<p><strong>← Zurück:</strong> <a href="../13_automatisierung/">Automatisierung</a><br />
+<strong>→ Weiter:</strong> <a href="../14_betrieb_und_wartung/">Betrieb und Wartung</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2517 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Anleitung für einen selbst gehosteten Mailserver mit dynamischer IP und externem Relay">
+      
+      
+        <meta name="author" content="moesch.ws">
+      
+      
+      
+        <link rel="prev" href="../06_relay_server/">
+      
+      
+        <link rel="next" href="../../03_Konfiguration/08_dns_mail_records/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>Heimserver - Self-Hosted Mailserver mit Relay</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#heimserver-einrichten" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../.." title="Self-Hosted Mailserver mit Relay" class="md-header__button md-logo" aria-label="Self-Hosted Mailserver mit Relay" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Self-Hosted Mailserver mit Relay
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Heimserver
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Darkmode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Darkmode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Lightmode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Lightmode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Flo-63/Mailserver-Setup" title="Zum Repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flo-63/Mailserver-Setup
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Übersicht
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00_Einleitung/00_problem/" class="md-tabs__link">
+          
+  
+  
+  Einleitung
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_Planung/04_voraussetzungen/" class="md-tabs__link">
+          
+  
+  
+  Planung
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../06_relay_server/" class="md-tabs__link">
+          
+  
+  
+  Infrastruktur
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../03_Konfiguration/08_dns_mail_records/" class="md-tabs__link">
+          
+  
+  
+  Konfiguration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../04_Betrieb/13_automatisierung/" class="md-tabs__link">
+          
+  
+  
+  Betrieb
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../05_Referenz/config_library/" class="md-tabs__link">
+          
+  
+  
+  Referenz
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Self-Hosted Mailserver mit Relay" class="md-nav__button md-logo" aria-label="Self-Hosted Mailserver mit Relay" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Self-Hosted Mailserver mit Relay
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Flo-63/Mailserver-Setup" title="Zum Repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Flo-63/Mailserver-Setup
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Übersicht
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Einleitung
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Einleitung
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/00_problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problemstellung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/01_wann_nicht_geeignet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wann nicht geeignet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/02_scope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Umfang
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/03_glossar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_Einleitung/00_variablen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variablen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planung
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planung
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_Planung/04_voraussetzungen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Voraussetzungen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_Planung/05_dns_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--ready"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_Planung/05b_registrar_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registrar & DNS-Delegation
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--ready"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastruktur
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Infrastruktur
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_relay_server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Relay-Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heimserver
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heimserver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architektur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architektur
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rolle-des-heimservers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rolle des Heimservers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firewall-architektur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall-Architektur
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Firewall-Architektur">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blacklist-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blacklist-System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tor-exit-node-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tor-Exit-Node-Blocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-system-vorbereiten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System vorbereiten
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-hostname-konfigurieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hostname konfigurieren
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-vmail-benutzer-anlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. vmail-Benutzer anlegen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-mysql-und-postfixadmin-einrichten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. MySQL und PostfixAdmin einrichten
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. MySQL und PostfixAdmin einrichten">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datenbank-anlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datenbank anlegen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#postfixadmin-installieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostfixAdmin installieren
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-postfix-konfigurieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Postfix konfigurieren
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Postfix konfigurieren">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#etcpostfixmaincf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        /etc/postfix/main.cf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sasl-passwort-fur-relay-hinterlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SASL-Passwort für Relay hinterlegen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etcpostfixmastercf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        /etc/postfix/master.cf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-map-dateien-anlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MySQL-Map-Dateien anlegen
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-dovecot-konfigurieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Dovecot konfigurieren
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-dh-parameter-erzeugen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. DH-Parameter erzeugen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-zertifikate-im-postfix-chroot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Zertifikate im Postfix-Chroot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-dienste-starten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Dienste starten
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-uberprufung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Überprüfung
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mailclient-einstellungen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mailclient-Einstellungen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ergebnis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Ergebnis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Konfiguration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Konfiguration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/08_dns_mail_records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Mail-Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/08b_postfixadmin_mysql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostfixAdmin & MySQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/09_dkim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DKIM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/10_dmarc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMARC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/11_tls_imap_smtp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLS für SMTP & IMAP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Konfiguration/12_spamfilter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spamfilter & Virenschutz
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Betrieb
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Betrieb
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_Betrieb/13_automatisierung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatisierung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_Betrieb/14_betrieb_und_wartung/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Betrieb & Wartung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_Betrieb/15_troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referenz
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_Referenz/config_library/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config Library
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architektur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architektur
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rolle-des-heimservers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rolle des Heimservers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firewall-architektur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall-Architektur
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Firewall-Architektur">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blacklist-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blacklist-System
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tor-exit-node-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tor-Exit-Node-Blocking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-system-vorbereiten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System vorbereiten
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-hostname-konfigurieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hostname konfigurieren
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-vmail-benutzer-anlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. vmail-Benutzer anlegen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-mysql-und-postfixadmin-einrichten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. MySQL und PostfixAdmin einrichten
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. MySQL und PostfixAdmin einrichten">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#datenbank-anlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datenbank anlegen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#postfixadmin-installieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostfixAdmin installieren
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-postfix-konfigurieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Postfix konfigurieren
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Postfix konfigurieren">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#etcpostfixmaincf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        /etc/postfix/main.cf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sasl-passwort-fur-relay-hinterlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SASL-Passwort für Relay hinterlegen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etcpostfixmastercf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        /etc/postfix/master.cf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-map-dateien-anlegen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MySQL-Map-Dateien anlegen
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-dovecot-konfigurieren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Dovecot konfigurieren
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-dh-parameter-erzeugen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. DH-Parameter erzeugen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-zertifikate-im-postfix-chroot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Zertifikate im Postfix-Chroot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-dienste-starten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Dienste starten
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-uberprufung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Überprüfung
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mailclient-einstellungen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mailclient-Einstellungen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ergebnis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Ergebnis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="heimserver-einrichten">Heimserver einrichten<a class="headerlink" href="#heimserver-einrichten" title="Permanent link">&para;</a></h1>
+<p>Der Heimserver ist der eigentliche Mailserver des Systems. Er empfängt Mails vom Relay-Server, stellt sie lokal zu und macht sie per IMAP für Mailclients erreichbar. Ausgehende Mails werden signiert und über den Relay-Server ins Internet weitergeleitet.</p>
+<p>Mailboxen und Domains werden über <strong>PostfixAdmin</strong> mit einem MySQL-Backend verwaltet.</p>
+<hr />
+<h2 id="architektur">Architektur<a class="headerlink" href="#architektur" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph LR
+    R[Relay-Server] --&gt;|Port 2525&lt;br/&gt;mynetworks| P[Postfix&lt;br/&gt;Heimserver]
+    C([Mailclient]) --&gt;|Port 587/465&lt;br/&gt;Submission + SASL| P
+    P --&gt;|Milter&lt;br/&gt;Port 12301| O[OpenDKIM]
+    O --&gt;|signierte Mail| P
+    P --&gt;|Port 587 + SASL| R
+    P --&gt;|Pipe: dovecot deliver| D[Dovecot]
+    D --&gt;|Maildir| M["/var/vmail/example.com/user/"]
+    D --&gt;|Port 993&lt;br/&gt;IMAPS| C
+    P --&gt;|SASL-Auth| D
+    DB[(MySQL&lt;br/&gt;postfixadmin)] --&gt;|virtual maps| P</code></pre>
+<hr />
+<h2 id="rolle-des-heimservers">Rolle des Heimservers<a class="headerlink" href="#rolle-des-heimservers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Eingehende Mails: vom Relay-Server (Port 2525, nur <code>mynetworks</code>)</li>
+<li>Ausgehende Mails: über Relay-Server (Port 587, SASL-Auth mit <code>{{RELAY_SASL_USER}}</code>)</li>
+<li>Mailclient-Einlieferung: Port 587 (STARTTLS) und Port 465 (SSL/TLS), SASL via Dovecot</li>
+<li>Mailzustellung: Postfix → Dovecot via Pipe (<code>dovecot deliver</code>)</li>
+<li>Mailspeicherung: Maildir unter <code>/var/vmail</code></li>
+<li>Mailboxverwaltung: PostfixAdmin mit MySQL</li>
+</ul>
+<hr />
+<h2 id="firewall-architektur">Firewall-Architektur<a class="headerlink" href="#firewall-architektur" title="Permanent link">&para;</a></h2>
+<p>Der Heimserver steht hinter einer <strong>Fritz!Box</strong>, die als primäre Firewall fungiert. Nur explizit freigegebene Ports erreichen den Heimserver:</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Protokoll</th>
+<th>Zweck</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>22</td>
+<td>TCP</td>
+<td>SSH</td>
+</tr>
+<tr>
+<td>80 / 443</td>
+<td>TCP</td>
+<td>HTTP/HTTPS (Apache, Certbot)</td>
+</tr>
+<tr>
+<td>143</td>
+<td>TCP</td>
+<td>IMAP (unverschlüsselt, intern)</td>
+</tr>
+<tr>
+<td>465</td>
+<td>TCP</td>
+<td>SMTPS – Mailclient-Einlieferung</td>
+</tr>
+<tr>
+<td>587</td>
+<td>TCP</td>
+<td>Submission – Mailclient-Einlieferung</td>
+</tr>
+<tr>
+<td>993</td>
+<td>TCP</td>
+<td>IMAPS</td>
+</tr>
+<tr>
+<td>2525</td>
+<td>TCP</td>
+<td>SMTP vom Relay-Server</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Port 25 ist bewusst <strong>nicht</strong> freigegeben – eingehende Mails kommen ausschließlich vom Relay über Port 2525.</p>
+</blockquote>
+<p>Auf dem Heimserver selbst läuft <code>iptables</code> mit offener INPUT-Policy (<code>ACCEPT</code>). Der Schutz erfolgt über:</p>
+<ul>
+<li><strong>Fritz!Box</strong> – Port-Whitelist</li>
+<li><strong>Blacklist</strong> – IP-Sets via <code>ipset</code> (<code>match-set blacklist src</code>)</li>
+<li><strong>Fail2Ban</strong> – automatisches Sperren bei Brute-Force (SSH, Apache)</li>
+<li><strong>GeoIP-Blocking</strong> – <code>xt_geoip</code>-Chain blockt Länder ohne legitimen Mailverkehr</li>
+<li><strong>Tor-Blocking</strong> – <code>/etc/iptables/drop_tor.sh</code> (siehe unten)</li>
+</ul>
+<h3 id="blacklist-system">Blacklist-System<a class="headerlink" href="#blacklist-system" title="Permanent link">&para;</a></h3>
+<p>Das Blacklist-System kombiniert externe IP-Listen, Fail2Ban-Bans und GeoIP-Blocking in einem <code>ipset</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Komponente</th>
+<th>Skript</th>
+<th>Ausführung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Einmaliges Setup</td>
+<td><code>init_blacklist.sh</code></td>
+<td>Nur beim ersten Einrichten</td>
+</tr>
+<tr>
+<td>Tägliche Aktualisierung</td>
+<td><code>update-blacklist.sh</code></td>
+<td>Cronjob täglich 02:00</td>
+</tr>
+<tr>
+<td>Fail2Ban → Blacklist</td>
+<td><code>cpfail2ban2bl.sh</code></td>
+<td>Wird von update-Skripten aufgerufen</td>
+</tr>
+<tr>
+<td>GeoIP-Daten aktualisieren</td>
+<td><code>update_xt_geoip.sh</code></td>
+<td>Bei Bedarf (monatlich)</td>
+</tr>
+</tbody>
+</table>
+<p>Alle Skripte sind in der <a href="../../05_Referenz/config_library/">Config Library</a> dokumentiert.</p>
+<p>Regeln persistent speichern (nach Änderungen):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>netfilter-persistent<span class="w"> </span>save
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Regeln liegen in: /etc/iptables/rules.v4</span>
+</code></pre></div>
+<h3 id="tor-exit-node-blocking">Tor-Exit-Node-Blocking<a class="headerlink" href="#tor-exit-node-blocking" title="Permanent link">&para;</a></h3>
+<p>Das Skript <code>/etc/iptables/drop_tor.sh</code> lädt die aktuelle Liste der Tor-Exit-Nodes von <code>dan.me.uk</code> und blockt sie per iptables-Chain <code>TOR</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Manuell ausführen:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>bash<span class="w"> </span>/etc/iptables/drop_tor.sh
+</code></pre></div>
+<blockquote>
+<p><strong>Wichtig:</strong> Die TOR-Chain wird <strong>nicht</strong> in <code>rules.v4</code> gespeichert – sie existiert nur im laufenden iptables und muss nach jedem Reboot erneut ausgeführt werden. Für automatische Ausführung beim Systemstart Cronjob oder systemd-Unit einrichten:</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Cronjob (täglich um 3 Uhr, z. B. in /etc/cron.d/drop-tor):</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="m">0</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>root<span class="w"> </span>/etc/iptables/drop_tor.sh<span class="w"> </span>&gt;&gt;<span class="w"> </span>/var/log/drop_tor.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+<p>Das vollständige Skript ist in der <a href="../../05_Referenz/config_library/">Config Library</a> dokumentiert.</p>
+<hr />
+<h2 id="1-system-vorbereiten">1. System vorbereiten<a class="headerlink" href="#1-system-vorbereiten" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>apt<span class="w"> </span>install<span class="w"> </span>postfix<span class="w"> </span>postfix-mysql<span class="w"> </span>dovecot-imapd<span class="w"> </span>dovecot-core<span class="w"> </span>mysql-server
+</code></pre></div>
+<p>Während der Postfix-Installation: <strong>„Internet Site"</strong> wählen, <code>{{DOMAIN}}</code> als Systemname eintragen.</p>
+<hr />
+<h2 id="2-hostname-konfigurieren">2. Hostname konfigurieren<a class="headerlink" href="#2-hostname-konfigurieren" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>hostnamectl<span class="w"> </span>set-hostname<span class="w"> </span><span class="o">{{</span>HOME_SMTP<span class="o">}}</span>
+</code></pre></div>
+<p><code>/etc/hosts</code> anpassen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>127.0.1.1   {{HOME_SMTP}} {{HOME_HOSTNAME}}
+</code></pre></div>
+<p><code>/etc/mailname</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>{{DOMAIN}}
+</code></pre></div>
+<p>Prüfen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>hostname<span class="w"> </span>-f
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># Erwartete Ausgabe: {{HOME_SMTP}}</span>
+</code></pre></div>
+<hr />
+<h2 id="3-vmail-benutzer-anlegen">3. vmail-Benutzer anlegen<a class="headerlink" href="#3-vmail-benutzer-anlegen" title="Permanent link">&para;</a></h2>
+<p>Mailboxen werden unter <code>/var/vmail</code> als Benutzer <code>vmail</code> (UID/GID 5000) gespeichert:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>groupadd<span class="w"> </span>-g<span class="w"> </span><span class="m">5000</span><span class="w"> </span>vmail
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>useradd<span class="w"> </span>-g<span class="w"> </span>vmail<span class="w"> </span>-u<span class="w"> </span><span class="m">5000</span><span class="w"> </span>vmail<span class="w"> </span>-d<span class="w"> </span>/var/vmail<span class="w"> </span>-m
+</code></pre></div>
+<hr />
+<h2 id="4-mysql-und-postfixadmin-einrichten">4. MySQL und PostfixAdmin einrichten<a class="headerlink" href="#4-mysql-und-postfixadmin-einrichten" title="Permanent link">&para;</a></h2>
+<p>PostfixAdmin verwaltet Domains, Mailboxen und Aliases in einer MySQL-Datenbank.</p>
+<h3 id="datenbank-anlegen">Datenbank anlegen<a class="headerlink" href="#datenbank-anlegen" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">postfixadmin</span><span class="w"> </span><span class="nb">CHARACTER</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">utf8mb4</span><span class="p">;</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="s1">&#39;postfixadmin&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="w"> </span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;{{SECRET_DB_PASSWORD}}&#39;</span><span class="p">;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">postfixadmin</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;postfixadmin&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">FLUSH</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="postfixadmin-installieren">PostfixAdmin installieren<a class="headerlink" href="#postfixadmin-installieren" title="Permanent link">&para;</a></h3>
+<p>PostfixAdmin ist eine PHP-Webanwendung. Installation und Webserver-Konfiguration sind nicht Teil dieser Anleitung – die PostfixAdmin-Dokumentation beschreibt den Prozess vollständig. Nach der Installation initialisiert PostfixAdmin das Datenbankschema automatisch.</p>
+<p>Die fertigen MySQL-Map-Dateien für Postfix liegen in der <a href="../../05_Referenz/config_library/">Config Library</a>.</p>
+<hr />
+<h2 id="5-postfix-konfigurieren">5. Postfix konfigurieren<a class="headerlink" href="#5-postfix-konfigurieren" title="Permanent link">&para;</a></h2>
+<h3 id="etcpostfixmaincf"><code>/etc/postfix/main.cf</code><a class="headerlink" href="#etcpostfixmaincf" title="Permanent link">&para;</a></h3>
+<p>Die vollständige Konfiguration liegt in der <a href="../../05_Referenz/config_library/">Config Library</a>. Wesentliche Direktiven:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="na">myhostname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">{{HOME_SMTP}}</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="na">myorigin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/etc/mailname</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="na">mydestination</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">$myhostname, localhost.$mydomain, localhost</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="na">local_recipient_maps</span><span class="w"> </span><span class="o">=</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1"># Virtuelle Mailboxen via PostfixAdmin/MySQL</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="na">mailbox_transport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dovecot</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="na">virtual_alias_maps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mysql:/etc/postfix/mysql_virtual_alias_maps.cf</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="na">virtual_mailbox_domains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mysql:/etc/postfix/mysql_virtual_domains_maps.cf</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="na">virtual_mailbox_maps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mysql:/etc/postfix/mysql_virtual_mailbox_maps.cf</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="na">virtual_mailbox_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/var/vmail</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="na">virtual_uid_maps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">static:5000</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="na">virtual_gid_maps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">static:5000</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="na">inet_interfaces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">all</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="na">inet_protocols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ipv4</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="c1"># Ausgehende Mails über Relay (Port 587, SASL)</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="na">relayhost</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">[{{RELAY_HOSTNAME}}]:587</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="na">smtp_use_tls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="na">smtp_tls_security_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">encrypt</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="na">smtp_tls_CApath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/{{HOME_SMTP}}</span>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="na">smtp_sasl_auth_enable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="na">smtp_sasl_password_maps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">hash:/etc/postfix/sasl_passwd</span>
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="na">smtp_sasl_security_options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">noanonymous</span>
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="c1"># Erlaubte Absender (Relay-IP fest, kein Hostname)</span>
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="na">mynetworks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">127.0.0.0/8 192.168.1.0/24 {{RELAY_IP}}</span>
+<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a>
+<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="c1"># SASL für Mailclients via Dovecot</span>
+<a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a><span class="na">smtpd_sasl_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">dovecot</span>
+<a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="na">smtpd_sasl_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">private/auth_dovecot</span>
+<a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="na">smtpd_sasl_auth_enable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>
+<a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a><span class="c1"># TLS</span>
+<a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a><span class="na">smtpd_tls_cert_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/{{HOME_SMTP}}/fullchain.pem</span>
+<a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a><span class="na">smtpd_tls_key_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/{{HOME_SMTP}}/privkey.pem</span>
+<a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a><span class="na">smtpd_tls_security_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">may</span>
+<a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a><span class="na">smtpd_tls_mandatory_protocols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">TLSv1.2 TLSv1.3</span>
+<a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a><span class="na">smtpd_tls_dh1024_param_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/etc/ssl/certs/dh4096.pem</span>
+<a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a>
+<a id="__codelineno-10-42" name="__codelineno-10-42" href="#__codelineno-10-42"></a><span class="c1"># OpenDKIM Milter</span>
+<a id="__codelineno-10-43" name="__codelineno-10-43" href="#__codelineno-10-43"></a><span class="na">milter_default_action</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">accept</span>
+<a id="__codelineno-10-44" name="__codelineno-10-44" href="#__codelineno-10-44"></a><span class="na">milter_protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6</span>
+<a id="__codelineno-10-45" name="__codelineno-10-45" href="#__codelineno-10-45"></a><span class="na">smtpd_milters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">inet:localhost:12301</span>
+<a id="__codelineno-10-46" name="__codelineno-10-46" href="#__codelineno-10-46"></a><span class="na">non_smtpd_milters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">$smtpd_milters</span>
+</code></pre></div>
+<h3 id="sasl-passwort-fur-relay-hinterlegen">SASL-Passwort für Relay hinterlegen<a class="headerlink" href="#sasl-passwort-fur-relay-hinterlegen" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[{{RELAY_HOSTNAME}}]:587    {{RELAY_SASL_USER}}:{{SECRET_RELAY_SASL_PASSWORD}}&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span>&gt;<span class="w"> </span>/etc/postfix/sasl_passwd
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>postmap<span class="w"> </span>hash:/etc/postfix/sasl_passwd
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/etc/postfix/sasl_passwd<span class="w"> </span>/etc/postfix/sasl_passwd.db
+</code></pre></div>
+<blockquote>
+<p><code>{{RELAY_SASL_USER}}</code> ist ein dedizierter Benutzer auf dem Relay-Server, der dort für die SASL-Authentifizierung eingerichtet ist. Siehe <a href="../06_relay_server/">Relay-Server einrichten</a>.</p>
+</blockquote>
+<h3 id="etcpostfixmastercf"><code>/etc/postfix/master.cf</code><a class="headerlink" href="#etcpostfixmastercf" title="Permanent link">&para;</a></h3>
+<p>Relevante Einträge – vollständige Datei in der <a href="../../05_Referenz/config_library/">Config Library</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a># Port 25 – nur mynetworks (Relay-Server)
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>smtp       inet  n  -  y  -  -  smtpd
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>  -o smtpd_tls_security_level=may
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>  -o smtpd_recipient_restrictions=permit_mynetworks,reject
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a># Port 465 – SMTPS (Wrapper-Mode)
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>smtps      inet  n  -  y  -  -  smtpd
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>  -o smtpd_tls_wrappermode=yes
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>  -o smtpd_sasl_auth_enable=yes
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a># Port 587 – Submission (STARTTLS)
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>submission inet n  -  y  -  -  smtpd
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>  -o smtpd_tls_security_level=encrypt
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>  -o smtpd_sasl_auth_enable=yes
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a># Port 2525 – Einlieferung vom Relay (nur mynetworks)
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>2525      inet  n  -  y  -  -  smtpd
+<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>  -o syslog_name=postfix/2525
+<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>  -o smtpd_tls_security_level=encrypt
+<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>  -o smtpd_sasl_auth_enable=yes
+<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>  -o smtpd_sasl_type=dovecot
+<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>  -o smtpd_sasl_path=private/auth
+<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>  -o smtpd_relay_restrictions=permit_sasl_authenticated,reject
+<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>  -o milter_macro_daemon_name=ORIGINATING
+<a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a>
+<a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a># Dovecot-Zustellung via Pipe
+<a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a>dovecot    unix  -  n  n  -  -  pipe
+<a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a>  flags=DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -d ${recipient}
+</code></pre></div>
+<h3 id="mysql-map-dateien-anlegen">MySQL-Map-Dateien anlegen<a class="headerlink" href="#mysql-map-dateien-anlegen" title="Permanent link">&para;</a></h3>
+<p>Alle fünf MySQL-Map-Dateien aus der <a href="../../05_Referenz/config_library/">Config Library</a> nach <code>/etc/postfix/</code> kopieren und <code>{{SECRET_DB_PASSWORD}}</code> durch das echte Passwort ersetzen.</p>
+<p>Berechtigungen setzen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>chmod<span class="w"> </span><span class="m">640</span><span class="w"> </span>/etc/postfix/mysql_*.cf
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>chown<span class="w"> </span>root:postfix<span class="w"> </span>/etc/postfix/mysql_*.cf
+</code></pre></div>
+<hr />
+<h2 id="6-dovecot-konfigurieren">6. Dovecot konfigurieren<a class="headerlink" href="#6-dovecot-konfigurieren" title="Permanent link">&para;</a></h2>
+<p>Dovecot empfängt Mails über den Pipe-Transport von Postfix (<code>dovecot deliver</code>) und stellt IMAP, POP3 und ManageSieve bereit. Benutzer und Mailbox-Pfade werden aus der PostfixAdmin-MySQL-Datenbank abgefragt.</p>
+<p>Die vollständigen Konfigurationsdateien liegen in der <a href="../../05_Referenz/config_library/">Config Library</a>. Wesentliche Punkte:</p>
+<p><strong>Protokolle</strong> (<code>dovecot.conf</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>protocols = imap pop3 sieve
+</code></pre></div>
+<p><strong>Auth-Backend</strong> (<code>dovecot.conf</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>passdb {
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>  driver = sql
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>  args = /etc/dovecot/dovecot-mysql.conf
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>}
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>userdb {
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>  driver = sql
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>  args = /etc/dovecot/dovecot-mysql.conf
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>}
+</code></pre></div>
+<p><strong>MySQL-Verbindung</strong> (<code>/etc/dovecot/dovecot-mysql.conf</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="na">driver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mysql</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="na">connect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">host=localhost dbname=postfixadmin user=postfixadmin password={{SECRET_DB_PASSWORD}}</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="na">default_pass_scheme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">PLAIN-MD5</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="na">password_query = SELECT password FROM mailbox WHERE username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;%u&#39;</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="na">user_query = SELECT CONCAT(&#39;maildir:/var/vmail/&#39;,maildir) AS mail, 5000 AS uid, 5000 AS gid FROM mailbox WHERE username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;%u&#39;</span>
+</code></pre></div>
+<blockquote>
+<p>Die <code>user_query</code> liefert den Maildir-Pfad direkt aus der Datenbank. Eine separate <code>mail_location</code>-Direktive ist nicht nötig.</p>
+</blockquote>
+<p><strong>SASL-Socket für Postfix</strong> (<code>dovecot.conf</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>service auth {
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>  unix_listener /var/spool/postfix/private/auth_dovecot {
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    group = postfix
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    mode = 0660
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    user = postfix
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>  }
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>  user = root
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>}
+</code></pre></div>
+<p><strong>TLS</strong> (<code>dovecot.conf</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>ssl = required
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>ssl_cert = &lt;/etc/letsencrypt/live/{{HOME_IMAP}}/fullchain.pem
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>ssl_key = &lt;/etc/letsencrypt/live/{{HOME_IMAP}}/privkey.pem
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>ssl_dh = &lt;/etc/dovecot/dh.pem
+</code></pre></div>
+<p><strong>DH-Parameter erzeugen:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>openssl<span class="w"> </span>dhparam<span class="w"> </span>-out<span class="w"> </span>/etc/dovecot/dh.pem<span class="w"> </span><span class="m">4096</span>
+</code></pre></div>
+<blockquote>
+<p>TLS-Zertifikat und Certbot-Hook für <code>{{HOME_IMAP}}</code> folgen in <a href="../../03_Konfiguration/11_tls_imap_smtp/">TLS für IMAP und SMTP</a>.</p>
+</blockquote>
+<hr />
+<h2 id="7-dh-parameter-erzeugen">7. DH-Parameter erzeugen<a class="headerlink" href="#7-dh-parameter-erzeugen" title="Permanent link">&para;</a></h2>
+<p>Postfix und Dovecot nutzen separate DH-Dateien:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Für Postfix</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>openssl<span class="w"> </span>dhparam<span class="w"> </span>-out<span class="w"> </span>/etc/ssl/certs/dh4096.pem<span class="w"> </span><span class="m">4096</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># Für Dovecot</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>openssl<span class="w"> </span>dhparam<span class="w"> </span>-out<span class="w"> </span>/etc/dovecot/dh.pem<span class="w"> </span><span class="m">4096</span>
+</code></pre></div>
+<blockquote>
+<p>Beide Befehle können parallel auf zwei Terminals ausgeführt werden. Jeder dauert mehrere Minuten.</p>
+</blockquote>
+<hr />
+<h2 id="8-zertifikate-im-postfix-chroot">8. Zertifikate im Postfix-Chroot<a class="headerlink" href="#8-zertifikate-im-postfix-chroot" title="Permanent link">&para;</a></h2>
+<p>Postfix läuft im Chroot unter <code>/var/spool/postfix/</code>. TLS-Zertifikate und <code>/etc/hosts</code> müssen dort gespiegelt werden – das übernimmt der Certbot Deploy-Hook automatisch (siehe <a href="../../04_Betrieb/13_automatisierung/">Automatisierung</a>).</p>
+<p>Initial manuell anlegen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>cp<span class="w"> </span>/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/fullchain.pem<span class="w"> </span>/var/spool/postfix/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>cp<span class="w"> </span>/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/chain.pem<span class="w"> </span>/var/spool/postfix/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>cp<span class="w"> </span>/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/cert.pem<span class="w"> </span>/var/spool/postfix/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>cp<span class="w"> </span>/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/privkey.pem<span class="w"> </span>/var/spool/postfix/etc/letsencrypt/live/<span class="o">{{</span>HOME_SMTP<span class="o">}}</span>/
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>cp<span class="w"> </span>/etc/hosts<span class="w"> </span>/var/spool/postfix/etc/hosts
+</code></pre></div>
+<blockquote>
+<p>Beim <code>postfix stop &amp;&amp; postfix start</code> erscheinen Warnungen wenn Chroot-Dateien veraltet sind.</p>
+</blockquote>
+<hr />
+<h2 id="9-dienste-starten">9. Dienste starten<a class="headerlink" href="#9-dienste-starten" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>postfix<span class="w"> </span>dovecot<span class="w"> </span>opendkim
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>systemctl<span class="w"> </span>status<span class="w"> </span>postfix<span class="w"> </span>dovecot<span class="w"> </span>opendkim
+</code></pre></div>
+<hr />
+<h2 id="10-uberprufung">10. Überprüfung<a class="headerlink" href="#10-uberprufung" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Hinweis:</strong> Postfix auf dem Heimserver loggt via <strong>journald</strong>, nicht nach <code>/var/log/mail.log</code>. Logs abfragen mit:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>postfix<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;10 minutes ago&quot;</span>
+</code></pre></div></p>
+</blockquote>
+<p>Port 2525 aktiv:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>telnet<span class="w"> </span><span class="o">{{</span>HOME_SMTP<span class="o">}}</span><span class="w"> </span><span class="m">25</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="c1"># Erwartete Ausgabe: 220 {{HOME_SMTP}} ESMTP Postfix</span>
+</code></pre></div>
+<p>SASL-Socket vorhanden:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>ls<span class="w"> </span>-la<span class="w"> </span>/var/spool/postfix/private/auth_dovecot
+</code></pre></div>
+<p>MySQL-Maps testen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>postmap<span class="w"> </span>-q<span class="w"> </span><span class="o">{{</span>DOMAIN<span class="o">}}</span><span class="w"> </span>mysql:/etc/postfix/mysql_virtual_domains_maps.cf
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="c1"># Erwartete Ausgabe: {{DOMAIN}}</span>
+</code></pre></div>
+<p>Relay-Auth testen:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>postmap<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;[{{RELAY_HOSTNAME}}]:587&quot;</span><span class="w"> </span>hash:/etc/postfix/sasl_passwd
+</code></pre></div>
+<p>OpenDKIM-Milter aktiv:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">12301</span>
+</code></pre></div>
+<hr />
+<h2 id="mailclient-einstellungen">Mailclient-Einstellungen<a class="headerlink" href="#mailclient-einstellungen" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Einstellung</th>
+<th>Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMTP-Server</td>
+<td><code>{{HOME_SMTP}}</code></td>
+</tr>
+<tr>
+<td>Port (STARTTLS)</td>
+<td><code>587</code></td>
+</tr>
+<tr>
+<td>Port (SSL/TLS)</td>
+<td><code>465</code></td>
+</tr>
+<tr>
+<td>Authentifizierung</td>
+<td>Benutzername + Passwort</td>
+</tr>
+<tr>
+<td>IMAP-Server</td>
+<td><code>{{HOME_IMAP}}</code></td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code>993</code></td>
+</tr>
+<tr>
+<td>Verschlüsselung</td>
+<td>SSL/TLS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ergebnis">✅ Ergebnis<a class="headerlink" href="#ergebnis" title="Permanent link">&para;</a></h2>
+<p>Nach diesem Kapitel:</p>
+<ul>
+<li>Postfix empfängt Mails vom Relay und weist alle anderen Verbindungen auf Port 25 ab</li>
+<li>Ausgehende Mails werden über den Relay-Server weitergeleitet (Port 587, SASL)</li>
+<li>Mailclients können sich per SASL auf Port 587 und 465 authentifizieren</li>
+<li>OpenDKIM signiert ausgehende Mails via Milter</li>
+<li>Dovecot empfängt Mails via Pipe-Transport und stellt sie im Maildir-Format zu</li>
+<li>Mailboxen und Domains werden über PostfixAdmin/MySQL verwaltet</li>
+</ul>
+<hr />
+<h2 id="navigation">🔁 Navigation<a class="headerlink" href="#navigation" title="Permanent link">&para;</a></h2>
+<p><strong>← Zurück:</strong> <a href="../06_relay_server/">Relay-Server einrichten</a><br />
+<strong>→ Weiter:</strong> <a href="../../03_Konfiguration/08_dns_mail_records/">DNS Mail-Records</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "search.suggest", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>
