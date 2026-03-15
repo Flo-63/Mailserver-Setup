@@ -15,6 +15,14 @@ Anleitung für einen vollständigen, selbst gehosteten Mailserver mit dynamische
 
 → **[https://flo-63.github.io/Mailserver-Setup](https://flo-63.github.io/Mailserver-Setup)**
 
+## Mitmachen & Feedback
+
+Fragen, Verbesserungsvorschläge oder Erfahrungsberichte sind willkommen – am liebsten als [GitHub Discussion](https://github.com/Flo-63/Mailserver-Setup/discussions).
+
+Aktuell läuft eine **Abstimmung**: [Soll ein Ansible-Playbook für dieses Setup entstehen?](https://github.com/Flo-63/Mailserver-Setup/discussions/2)
+
+---
+
 ## Lokal bauen
 
 ```bash
