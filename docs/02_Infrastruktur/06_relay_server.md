@@ -1,7 +1,7 @@
 
 # Relay-Server einrichten
 
-Der Relay-Server ist die einzige Komponente dieser Architektur mit einer statischen öffentlichen IP-Adresse. Er übernimmt die gesamte SMTP-Kommunikation mit dem Internet – der Heimserver bleibt nach außen unsichtbar.
+Der Relay-Server (`{{RELAY_HOSTNAME}}`) ist die einzige Komponente dieser Architektur mit einer statischen öffentlichen IP-Adresse (`{{RELAY_IP}}`). Er übernimmt die gesamte SMTP-Kommunikation mit dem Internet – der Heimserver bleibt nach außen unsichtbar.
 
 ---
 
@@ -13,7 +13,7 @@ graph LR
     C([Mailclient]) -->|Port 587 + SASL| R
     R -->|Milter Port 11332| RS[Rspamd]
     RS -->|Virenscan| AV[ClamAV]
-    R -->|Port 2525 + mynetworks| H[Heimserver]
+    R -->|Port 2525* + mynetworks| H[Heimserver]
     H -->|Port 587 + SASL| R
 ```
 
@@ -24,10 +24,9 @@ graph LR
 - Empfang eingehender E-Mails aus dem Internet (Port 25)
 - Spamfilterung und Virenscan via Rspamd + ClamAV
 - Weiterleitung an den Heimserver (Port 2525, IP-basiert via `mynetworks`)
-- Entgegennahme ausgehender Mails vom Heimserver (Port 587, 
-  SASL: `{{RELAY_SASL_USER}}`)
+- Entgegennahme ausgehender Mails vom Heimserver (Port 587, SASL: `{{RELAY_SASL_USER}}`)
 - Versand ausgehender Mails direkt ins Internet
-- Systemmails (Bounces) an die Domain-Adressen über `transport_maps` an den Heimserver
+- Systemmails (Bounces) an `{{DOMAIN}}`-Adressen über `transport_maps` an den Heimserver
 
 ---
 
@@ -89,14 +88,16 @@ dig -x {{RELAY_IP}}
 
 Der Relay-Server nutzt `iptables` mit einer **restriktiven Policy** (INPUT DROP). Die Regeln werden dynamisch gesetzt, weil SSH, Submission (587) und DNS-Zugriff nur vom Heimserver erlaubt sind – dessen IP sich dynamisch ändert.
 
-| Port | Protokoll | Zugang | Zweck |
-|---|---|---|---|
-| 22 | TCP | Heimserver-IP | SSH |
-| 25 | TCP | alle | SMTP eingehend |
-| 80 / 443 | TCP | alle | HTTP/HTTPS (Let's Encrypt, MTA-STS) |
-| 587 | TCP | Heimserver-IP | Submission vom Heimserver |
-| 2525 | TCP | Heimserver-IP | Eingehende Mails vom Heimserver |
-| 53 | TCP/UDP | Heimserver-IP | DNS (Unbound) |
+| Port     | Protokoll | Zugang        | Zweck                               |
+| -------- | --------- | ------------- | ----------------------------------- |
+| 22       | TCP       | Heimserver-IP | SSH                                 |
+| 25       | TCP       | alle          | SMTP eingehend                      |
+| 80 / 443 | TCP       | alle          | HTTP/HTTPS (Let's Encrypt, MTA-STS) |
+| 587      | TCP       | Heimserver-IP | Submission vom Heimserver           |
+| 2525*    | TCP       | Heimserver-IP | Eingehende Mails vom Heimserver     |
+| 53       | TCP/UDP   | Heimserver-IP | DNS (Unbound)                       |
+
+> **Hinweis zu Port 2525:** Port 2525 ist ein registrierter IANA-Port und wird hier für die interne Kommunikation zwischen Relay und Heimserver verwendet. Er ist ausschließlich für die Heimserver-IP freigegeben. Als Alternative kann ein Port aus dem Ephemeral-Bereich (49152–65535) gewählt werden – alle Konfigurationsstellen müssen dann konsistent angepasst werden.
 
 Die Firewall wird über `/usr/local/bin/update_relay_ip.sh` gesetzt. Das Skript ermittelt die aktuelle IP des Heimservers per DNS, setzt alle iptables- und ip6tables-Regeln neu und speichert sie persistent. Es aktualisiert ausserdem die Unbound-`access-control`-Konfiguration.
 

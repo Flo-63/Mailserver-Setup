@@ -71,14 +71,16 @@ Anforderungen:
 - Dauerhaft laufend und mit dem Internet verbunden
 - Router (Fritz!Box) mit Portweiterleitung für folgende Ports:
 
-| Port | Zweck |
-|---|---|
-| 2525 | SMTP vom Relay-Server (eingehende Mails) |
-| 465 / 587 | Submission für Mailclients |
-| 993 | IMAPS |
-| 22 | SSH |
+| Port      | Zweck                                    |
+| --------- | ---------------------------------------- |
+| 2525*     | SMTP vom Relay-Server (eingehende Mails) |
+| 465 / 587 | Submission für Mailclients               |
+| 993       | IMAPS                                    |
+| 22        | SSH                                      |
 
 > Port 25 wird auf dem Heimserver **nicht** benötigt und sollte nicht freigegeben werden. Eingehende Mails kommen ausschließlich vom Relay über Port 2525. Ausgehende Mails laufen über den Relay-Server.
+
+> **Hinweis zu Port 2525:** Port 2525 ist ein registrierter IANA-Port („mail-smtp") und wird in diesem Setup für die interne Server-zu-Server-Kommunikation zwischen Relay und Heimserver verwendet. Er ist ausschließlich für die Relay-IP freigegeben und nicht öffentlich zugänglich. Wer stattdessen einen Port aus dem Ephemeral-Bereich (49152–65535) bevorzugt, kann z. B. Port 49225 verwenden – alle Konfigurationsstellen müssen dann entsprechend angepasst werden.
 
 ---
 
